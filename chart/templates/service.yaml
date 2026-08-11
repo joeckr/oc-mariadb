@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.mariadb.name }}
+  labels:
+    app: {{ .Values.mariadb.app }}
+spec:
+  type: NodePort
+  ports:
+    - port: {{ .Values.mariadb.port }}
+      targetPort: {{ .Values.mariadb.port }}
+      protocol: TCP
+      name: {{ .Values.mariadb.name }}
+  selector:
+    app: {{ .Values.mariadb.app }}

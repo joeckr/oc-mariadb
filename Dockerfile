@@ -1,0 +1,16 @@
+ARG VERSION=12
+ARG REGISTRY=docker.io/library
+FROM $REGISTRY/mariadb:$VERSION-ubi
+
+USER root
+
+ENV MARIADB_DATA_DIR=/var/lib/mysql \
+    MARIADB_RUN_DIR=/run/mysqld \
+    MARIADB_LOG_DIR=/var/log/mysql \
+    MARIADB_INIT_DIR=/docker-entrypoint-initdb.d
+
+RUN mkdir -p ${MARIADB_DATA_DIR} ${MARIADB_RUN_DIR} ${MARIADB_LOG_DIR} ${MARIADB_INIT_DIR} && \
+    chgrp -R 0 ${MARIADB_DATA_DIR} ${MARIADB_RUN_DIR} ${MARIADB_LOG_DIR} ${MARIADB_INIT_DIR} && \
+    chmod -R g+rwX ${MARIADB_DATA_DIR} ${MARIADB_RUN_DIR} ${MARIADB_LOG_DIR} ${MARIADB_INIT_DIR}
+
+USER 1031

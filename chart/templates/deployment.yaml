@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.mariadb.name }}
+  labels:
+    app: {{ .Values.mariadb.app }}
+spec:
+  replicas: {{ .Values.mariadb.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.mariadb.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.mariadb.app }}
+    spec:
+      automountServiceAccountToken: false
+      volumes:
+        - name: mariadb-storage
+          persistentVolumeClaim:
+            claimName: mariadb-pvc
+        {{- if .Values.initSchema.enabled }}
+        - name: mariadb-schema
+          configMap:
+            name: mariadb-schema
+        {{- end }}
+      containers:
+        - name: {{ .Values.mariadb.name }}
+          image: "{{ .Values.mariadb.image }}:{{ .Values.mariadb.tag }}"
+          imagePullPolicy: {{ .Values.mariadb.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.mariadb.port }}
+              name: {{ .Values.mariadb.name }}
+          env:
+            - name: MARIADB_DATABASE
+              value: {{ .Values.mariadb.db | quote }}
+            - name: MARIADB_USER
+              value: {{ .Values.mariadb.user | quote }}
+            - name: MARIADB_PASSWORD
+              value: {{ .Values.mariadb.password | quote }}
+            - name: MARIADB_ROOT_PASSWORD
+              value: {{ .Values.mariadb.rootPassword | quote }}
+          volumeMounts:
+            - name: mariadb-storage
+              mountPath: /var/lib/mysql
+            {{- if .Values.initSchema.enabled }}
+            - name: mariadb-schema
+              mountPath: /docker-entrypoint-initdb.d/schema.sql
+              subPath: schema.sql
+            {{- end }}

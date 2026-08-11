@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mariadb-pvc
+  labels:
+    app: {{ .Values.mariadb.app }}
+spec:
+  accessModes:
+    - {{ .Values.mariadb.storageAccessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.mariadb.storageSize }}
+  {{- if .Values.mariadb.storageClass }}
+  storageClassName: {{ .Values.mariadb.storageClass | quote }}
+  {{- end }}
