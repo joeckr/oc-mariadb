@@ -5,7 +5,7 @@ FROM $REGISTRY/mariadb:$VERSION-ubi
 USER root
 
 ENV MARIADB_DATA_DIR=/var/lib/mysql \
-    MARIADB_RUN_DIR=/run/mysqld \
+    MARIADB_RUN_DIR=/run/mariadb \
     MARIADB_LOG_DIR=/var/log/mysql \
     MARIADB_INIT_DIR=/docker-entrypoint-initdb.d
 
